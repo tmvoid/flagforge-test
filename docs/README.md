@@ -90,8 +90,9 @@ Only one lab runs at a time; starting another one asks first.
 
 - A Content-Security-Policy on every page allows only this site's own scripts and styles — **no inline code, no inline
   style attributes, no remote scripts**. Images may come from this site and from GitHub (contributor avatars).
-  Because `style-src 'self'` is strict, a `style="…"` attribute in the HTML source and a `<style>` element are both
-  blocked; setting a style from JavaScript (`el.style.width = …`) is not.
+  Because `style-src 'self'` is strict, a `style="…"` attribute in the HTML source, a `<style>` element and
+  `el.setAttribute("style", …)` are all blocked — in the last case the attribute is set but the style never
+  applies. Assigning a CSSOM property (`el.style.width = …`) is the one way that works.
 - Text from `challenges.json` and READMEs is always inserted as plain text. The README renderer ignores raw HTML and only keeps
   `https` and relative links.
 - Lab links are only clickable for `127.0.0.1` / `localhost`.

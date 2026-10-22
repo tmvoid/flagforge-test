@@ -87,7 +87,8 @@
 	   The launcher only sends a percent for the stages that can be measured (the download);
 	   every other stage omits it. Rendering those as 0% made the bar jump backwards, so a
 	   stage without a percent gets an indeterminate bar instead of a number.
-	   The width is set through the CSSOM, which the strict CSP allows. */
+	   The width is set through the CSSOM: under the strict CSP, `style-src 'self'` blocks a
+	   `<style>` element and `setAttribute("style", …)`, but a CSSOM property still applies. */
 	function progressBar(percent, label) {
 		const known = percent !== undefined && percent !== null && percent !== "";
 		const track = h("div", { class: "progress-track", role: "progressbar" });
