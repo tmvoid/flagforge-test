@@ -46,6 +46,21 @@ To republish after a change:
 3. `js/config.js` holds the GitHub org/repo of the launcher releases, the extension store links, and `chromeId`
    (printed by `tools/make_key.py`). `chromeId` fills in the Chrome install command shown to players.
 
+## Cutting a release
+
+The launcher binaries and the browser extension are published by
+`.github/workflows/launcher-release.yml`:
+
+```bash
+gh workflow run launcher-release.yml --ref launcher-v0.1.0
+```
+
+The release gets `silentproxy-linux`, `silentproxy-macos`, `silentproxy-windows.exe`,
+`silentproxy-firefox.xpi` and `SHA256SUMS.txt`.
+
+Use the dispatch rather than `git tag && git push`: GitHub does not start a `push` workflow when the tag points at
+a commit that is already the default branch tip, which is what a post-release tag does.
+
 ## Add or edit things
 
 | I want to… | Do this |
