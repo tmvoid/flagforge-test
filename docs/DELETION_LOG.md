@@ -133,6 +133,13 @@ Additional verification:
 - **Static analysis re-run after the cleanup**: `knip` reports no unused exports in
   `docs/`; the AST scan of the launcher reports no unreferenced module-level symbols and
   no unused imports; the CSS scan reports no orphaned class selectors.
+- **`pyflakes` on the launcher**: 8 findings before the cleanup, 3 after. The 5 that were
+  fixed are exactly the unused imports listed above. The 3 that remain are pre-existing and
+  in files this session did not touch — `tests/test_windows.py:26` (`outer`),
+  `tests/test_units.py:129` (`config` shadowed by a loop variable) and
+  `tests/helpers.py:36` (`handler`). They are in test scaffolding rather than shipped
+  code, and are listed here rather than fixed to keep this session's diff scoped to
+  dead code.
 - `knip`'s remaining "unused files" entries are false positives — it does not read
   `<script src>` tags in HTML (`docs/js/config.js`, `home.js`, `silentproxy-client.js`) nor
   the extension's `FILES` manifest in `tools/build.py` (`src/*.js`).
