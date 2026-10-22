@@ -111,7 +111,7 @@ players to do that with Burp's hostname-resolution setting.
 ## Develop & test
 
 ```bash
-python -m unittest discover -s tests -t .      # 37 tests, no Docker needed (tests use tests/fake_docker.py)
+python -m unittest discover -s tests -t .      # 46 tests, no Docker needed (tests use tests/fake_docker.py)
 ```
 
 `SILENTPROXY_DEV=1` (development only) enables `SILENTPROXY_REGISTRY` (file path/URL), `SILENTPROXY_DOCKER_BIN`,

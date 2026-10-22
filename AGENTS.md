@@ -200,7 +200,9 @@ python tools/package_lab.py ... --validate
 - **TTL enforcement**: Labs auto-stop after `ttl_hours` via detached reaper process (survives browser/extension close).
 - **Lab catalogue**: `labs.json` is fetched from `REGISTRY_URL` at runtime. Zips downloaded from GitHub Releases, SHA-256 verified.
 - **No hostnames in /etc/hosts**: Mission 1 teaches players to use Burp's hostname-resolution setting for `portal.megacorp.local` etc.
-- **SDK shared**: `silentproxy-extension/sdk/silentproxy-client.js` is copied to `docs/js/silentproxy-client.js` — keep in sync.
+- **SDK shared**: `silentproxy-extension/sdk/silentproxy-client.js` is the canonical copy; `docs/js/silentproxy-client.js`
+  is the site's copy. `silentproxy-extension/tools/build.py` copies it automatically (or run `tools/sync_sdk.py` on its
+  own), and the website test fails if the two ever differ.
 - **Release assets**: `.github/workflows/launcher-release.yml` (repo root, not in the launcher folder) publishes the three
   launcher binaries **and** `docs/downloads/silentproxy-firefox.xpi`. The site's `js/config.js` download URLs point at that release.
 - **No build step for the site**: `docs/` is plain HTML/CSS/JS on GitHub Pages. There is no bundler, no npm dependencies,
