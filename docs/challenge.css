@@ -213,6 +213,25 @@
 .alert-err .alert-hint, .alert-err .alert-list { color: #ffb3bb; }
 .alert-warn { background: rgba(245, 166, 35, 0.1); border-color: rgba(245, 166, 35, 0.3); color: var(--warning); }
 .alert-warn .alert-hint { color: #ffd699; }
+.alert-info { background: var(--accent-soft); border-color: rgba(46, 229, 157, 0.28); color: var(--accent); }
+.alert-info .alert-hint { color: var(--body); }
+
+/* Progress — the launcher streams stage/percent while it downloads and boots the lab. */
+.progress { display: flex; align-items: center; gap: var(--sp-3); width: 100%; }
+.progress-track {
+	flex-grow: 1;
+	height: 6px;
+	background: var(--surface-3);
+	border-radius: var(--r-full);
+	overflow: hidden;
+}
+.progress-fill {
+	height: 100%;
+	background: var(--accent);
+	box-shadow: 0 0 10px var(--accent);
+	transition: width 0.4s var(--ease);
+}
+.progress-pct { font-size: 0.75rem; color: var(--mute); min-width: 3ch; text-align: right; }
 
 /* --------------------------------------------------------------------------
    6. FLAG SUBMISSION

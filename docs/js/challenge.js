@@ -83,6 +83,17 @@
 		return [t.slice(0, i), h("span", { class: "title-suffix", text: t.slice(i) })];
 	}
 
+	/* A progress bar. The width is set through the CSSOM, which the strict CSP allows. */
+	function progressBar(percent) {
+		const pct = Math.max(0, Math.min(100, Math.round(Number(percent) || 0)));
+		const fill = h("div", { class: "progress-fill" });
+		fill.style.width = pct + "%";
+		return h("div", { class: "progress" },
+			h("div", { class: "progress-track" }, fill),
+			h("span", { class: "mono progress-pct", text: pct + "%" })
+		);
+	}
+
 	/* ── Terminal ─────────────────────────────────────────────── */
 	function terminalBox(lines) {
 		return h("div", { class: "terminal" },
@@ -261,8 +272,12 @@
 
 				let controls;
 				if (starting) {
+					// The launcher streams stage-by-stage progress while it downloads and boots the lab.
+					const p = L.progress || {};
 					controls = h("div", { class: "mission-side" },
-						h("span", { class: "badge live" }, h("span", { class: "live-dot animate" }), "Starting…"));
+						h("span", { class: "badge live" }, h("span", { class: "live-dot animate" }), p.message || "Starting…"),
+						progressBar(p.percent)
+					);
 				} else if (running) {
 					const urls = L.urls || [];
 					const mainUrl = urls.find((u) => u.link) || urls[0];
@@ -325,6 +340,28 @@
 					h("span", { class: "mono panel-count", text: String(ch.labs.length).padStart(2, "0") + " missions" })
 				)
 			);
+
+			// A failed status poll used to be swallowed: the lab kept looking like it was running.
+			const notice = ctl.state.notice;
+			if (notice) {
+				container.append(h("div", { class: "alert alert-warn", role: "alert" },
+					h("strong", { text: notice.message || "Lost contact with the launcher." }),
+					notice.hint ? h("div", { class: "alert-hint", text: notice.hint }) : null,
+					h("div", { class: "alert-actions" },
+						h("button", { type: "button", class: "btn-ghost", text: "Check again", onclick: () => ctl.checkSetup() })
+					)
+				));
+			}
+
+			// Labs running for a different challenge still count against the one-lab limit.
+			const others = ctl.state.others || [];
+			if (others.length) {
+				container.append(h("div", { class: "alert alert-info", role: "status" },
+					h("strong", { text: "Another lab is running." }),
+					h("div", { class: "alert-hint", text: "Still up: " + others.join(", ") })
+				));
+			}
+
 			container.append(missions);
 		};
 
