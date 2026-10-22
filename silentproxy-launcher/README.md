@@ -118,8 +118,8 @@ python -m unittest discover -s tests -t .      # 37 tests, no Docker needed (tes
 and non-GitHub download hosts. `SILENTPROXY_HOME` relocates the data directory and works in any mode.
 
 Before first release, edit `REGISTRY_URL` / `ALLOWED_URL_PREFIXES` in `silentproxy/config.py` to the real repo, and set
-the extension IDs when running `install`. Tag `vX.Y.Z` to build Linux/macOS/Windows binaries via
-`.github/workflows/release.yml`.
+the extension IDs when running `install`. The binaries are built by the **repo root** workflow
+`.github/workflows/launcher-release.yml` (not one inside this folder): tag `launcher-vX.Y.Z` and push the tag.
 
 ## Layout
 

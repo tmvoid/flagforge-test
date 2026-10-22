@@ -52,14 +52,17 @@ The launcher binaries and the browser extension are published by
 `.github/workflows/launcher-release.yml`:
 
 ```bash
-gh workflow run launcher-release.yml --ref launcher-v0.1.0
+git tag launcher-v0.1.0 && git push origin launcher-v0.1.0
 ```
 
 The release gets `silentproxy-linux`, `silentproxy-macos`, `silentproxy-windows.exe`,
 `silentproxy-firefox.xpi` and `SHA256SUMS.txt`.
 
-Use the dispatch rather than `git tag && git push`: GitHub does not start a `push` workflow when the tag points at
-a commit that is already the default branch tip, which is what a post-release tag does.
+If the tag push does not produce a run, use the fallback — the tag must already be on the remote:
+
+```bash
+gh workflow run launcher-release.yml -f tag=launcher-v0.1.0
+```
 
 ## Add or edit things
 
