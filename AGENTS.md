@@ -27,9 +27,18 @@ python3 -m http.server 8000    # open http://localhost:8000/
 
 **CSP is strict and enforced by tests** — every page carries the same policy and
 `npm test` fails if any page has an inline `<script>`, a `style=` attribute, or an `on*=` handler.
-Under `style-src 'self'` (no `unsafe-inline`), the browser blocks **`style="…"` attributes in the HTML source**
-and **`<style>` elements**. Setting a style from JavaScript is fine: both `el.style.width = …` and
-`el.setAttribute("style", …)` are allowed. Classes are still preferred for anything static.
+Under `style-src 'self'` (no `unsafe-inline`) the browser blocks three things, all verified against the
+live policy:
+
+| what | result |
+|---|---|
+| `style="…"` in the HTML source | blocked |
+| a `<style>` element | blocked |
+| `el.setAttribute("style", …)` | blocked — the attribute is set but the style never applies |
+| `el.style.width = …` (CSSOM) | **works** |
+
+So the only way to set a style from JavaScript is a CSSOM property assignment, which is what
+`docs/js/challenge.js` uses. Classes are preferred for anything static.
 
 **Add a challenge**:
 1. Add entry to `data/challenges.json` with `"status": "live"` and `labs` array matching `labs.json` IDs
