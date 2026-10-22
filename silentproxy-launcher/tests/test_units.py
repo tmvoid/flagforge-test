@@ -9,7 +9,7 @@ import zipfile
 from pathlib import Path
 from unittest import mock
 
-from silentproxy import archive, install, net, policy, protocol, registry
+from silentproxy import archive, config, install, net, policy, protocol, registry
 from silentproxy.errors import LabError
 from tests.helpers import GOOD_COMPOSE, dev_env, make_lab_zip, registry_json, serve
 
@@ -160,13 +160,15 @@ class NetAndRegistryTests(unittest.TestCase):
             self.assertFalse(net.host_allowed(bad), bad)
 
     def test_url_allowlist(self):
-        self.assertTrue(net.url_allowed("https://github.com/Cybersecurity-CTF-Org/r/releases/download/t/a.zip"))
+        # Derive from the config so the test survives the project moving to another org/repo.
+        prefix = config.ALLOWED_URL_PREFIXES[0]
+        self.assertTrue(net.url_allowed(prefix + "r/releases/download/t/a.zip"))
         self.assertFalse(net.url_allowed("https://github.com/someone-else/r/a.zip"))
-        self.assertFalse(net.url_allowed("http://github.com/Cybersecurity-CTF-Org/r/a.zip"))
+        self.assertFalse(net.url_allowed(prefix.replace("https://", "http://") + "r/a.zip"))
 
     def test_registry_parsing_skips_bad_entries(self):
         good = {"id": "mission-1", "version": "1.0.0", "sha256": "a" * 64, "size": 10,
-                "url": "https://github.com/Cybersecurity-CTF-Org/r/releases/download/t/m.zip",
+                "url": config.ALLOWED_URL_PREFIXES[0] + "r/releases/download/t/m.zip",
                 "ports": [{"name": "p", "host": 8081}]}
         bad_id = dict(good, id="../etc")
         bad_url = dict(good, id="mission-2", url="https://evil.example/m.zip")

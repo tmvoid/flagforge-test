@@ -59,6 +59,9 @@ jobs:
         with:
           path: dist
           merge-multiple: true
+      - name: Include the browser extension
+        working-directory: .
+        run: cp docs/downloads/silentproxy-firefox.xpi dist/silentproxy-firefox.xpi
       - run: cd dist && sha256sum * > SHA256SUMS.txt && ls -l
       - uses: softprops/action-gh-release@v2
         with:

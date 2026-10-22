@@ -3,16 +3,19 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https://github.com https://avatars.githubusercontent.com https://images.unsplash.com; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+	<meta name="description" content="Flag Forge — realistic offensive and defensive security labs. Real tools, real targets, real skills.">
 	<title>Flag Forge · Master Cybersecurity</title>
 	<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 	<link rel="stylesheet" href="style.css">
 </head>
 <body>
+	<input type="checkbox" id="nav-open" class="nav-checkbox" hidden>
 	<div class="bg-grid"></div>
 
 	<nav class="navbar">
 		<a href="index.html" class="nav-logo">
-			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+			<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
 			FLAG FORGE
 		</a>
 		<div class="nav-links">
@@ -22,67 +25,166 @@
 			<a href="apply.html">Apply</a>
 		</div>
 		<div class="nav-actions">
-			<a href="challenges.html" class="btn-primary">Get Started</a>
+			<a href="challenges.html" class="btn-primary small nav-cta">Get Started</a>
+			<label for="nav-open" class="nav-toggle" aria-label="Toggle navigation"><span></span></label>
 		</div>
 	</nav>
 
+	<div class="nav-mobile">
+		<a href="index.html" class="active">Home</a>
+		<a href="challenges.html">Challenges</a>
+		<a href="members.html">Members</a>
+		<a href="apply.html">Apply</a>
+		<a href="challenges.html" class="btn-primary">Get Started</a>
+	</div>
+
 	<header class="hero-section">
-		<div class="hero-content">
-			<h1 class="hero-title">
-				Break in.<br>
-				<span class="text-gradient">Forge the flag.</span>
-			</h1>
-			<p class="hero-subtitle">
-				Realistic offensive and defensive labs. Real tools, real targets, real skills.
-			</p>
-			<div class="hero-buttons">
-				<a href="challenges.html" class="btn-primary">Start hacking →</a>
-				<a href="members.html" class="btn-secondary">Meet the team</a>
+		<div class="mesh-gradient" aria-hidden="true"></div>
+		<div class="container">
+			<div class="hero-content">
+				<span class="hero-badge"><span class="live-dot animate" aria-hidden="true"></span>LIVE CTF PLATFORM</span>
+				<h1 class="hero-title">
+					Break in.<br>
+					<span class="text-gradient">Forge the flag.</span>
+				</h1>
+				<p class="hero-subtitle">
+					Realistic offensive and defensive labs. Real tools, real targets, real skills.
+				</p>
+				<div class="hero-buttons">
+					<a href="challenges.html" class="btn-primary">Start hacking →</a>
+					<a href="members.html" class="btn-secondary">Meet the team</a>
+				</div>
+				<p class="hero-note">labs run on 127.0.0.1 · nothing is attacked over the internet</p>
 			</div>
 		</div>
 	</header>
 
-	<section class="about-section">
-		<div class="about-grid">
-			<div class="about-text">
-				<h2>Built by hackers,<br>for future hackers.</h2>
-				<p>Flag Forge is a capture-the-flag platform designed to take you from curious to capable. Every mission drops you into a live environment where you intercept traffic, enumerate services, and crack credentials — just like on a real engagement.</p>
-				<p>Progress through structured tracks, submit flags, and watch your skills compound.</p>
-			</div>
-			<div class="about-stats">
-				<div class="stat-box">
-					<span class="stat-label">Live CTFs</span>
-					<span class="stat-value" id="stat-ctfs">-</span>
+	<section class="section">
+		<div class="container">
+			<div class="about-grid">
+				<div class="about-text">
+					<p class="eyebrow">THE PLATFORM</p>
+					<h2>Built by hackers, for future hackers.</h2>
+					<p>Flag Forge is a capture-the-flag platform designed to take you from curious to capable. Every mission drops you into a live environment where you intercept traffic, enumerate services, and crack credentials — just like on a real engagement.</p>
+					<p>Progress through structured tracks, submit flags, and watch your skills compound.</p>
 				</div>
-				<div class="stat-box">
-					<span class="stat-label">Total Missions</span>
-					<span class="stat-value" id="stat-missions">-</span>
-				</div>
-				<div class="stat-box">
-					<span class="stat-label">Lab access</span>
-					<span class="stat-value">24/7</span>
+				<div class="about-stats">
+					<div class="stat-box">
+						<span class="stat-label">Live CTFs</span>
+						<span class="stat-value" id="stat-ctfs">—</span>
+					</div>
+					<div class="stat-box">
+						<span class="stat-label">Total Missions</span>
+						<span class="stat-value" id="stat-missions">—</span>
+					</div>
+					<div class="stat-box">
+						<span class="stat-label">Lab access</span>
+						<span class="stat-value">24/7</span>
+					</div>
 				</div>
 			</div>
 		</div>
 	</section>
 
-	<script>
-		// Dynamically calculate stats from challenges.json
-		fetch('data/challenges.json')
-			.then(res => res.json())
-			.then(data => {
-				let liveCtfs = 0;
-				let totalMissions = 0;
-				
-				data.challenges.forEach(challenge => {
-					if (challenge.status === 'live') liveCtfs++;
-					if (challenge.labs) totalMissions += challenge.labs.length;
-				});
+	<section class="showcase-band">
+		<div class="container">
+			<div class="showcase-grid">
+				<div class="showcase-copy">
+					<p class="eyebrow">ONE COMMAND</p>
+					<h2>Your lab starts in one command.</h2>
+					<p>The launcher downloads the mission bundle, verifies its checksum, checks it against a safety policy, and brings the whole environment up on your own machine. No signup, no queue, no shared infrastructure.</p>
+					<ul class="feature-list">
+						<li>Runs on 127.0.0.1 — nothing is exposed to the internet</li>
+						<li>Every image and port is verified before it starts</li>
+						<li>Labs stop themselves after their time limit</li>
+					</ul>
+				</div>
+				<div class="terminal">
+					<div class="terminal-header">
+						<div class="terminal-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+						<span class="terminal-title">~/flagforge</span>
+					</div>
+					<div class="terminal-body">
+						<span class="terminal-line"><span class="p">$</span> <span class="cmd">silentproxy start mission-1-recon</span></span>
+						<span class="terminal-line out">  registry · docker · download · verify</span>
+						<span class="terminal-line out">  extract · validate · starting</span>
+						<span class="terminal-line"><span class="ok">  ready</span> <span class="out">— policy passed, 8 services up</span></span>
+						<span class="terminal-line">&nbsp;</span>
+						<span class="terminal-line"><span class="out">Portal HTTPS</span>  <span class="ok">https://127.0.0.1:18081</span></span>
+						<span class="terminal-line"><span class="out">Main app</span>      <span class="ok">http://127.0.0.1:18083</span></span>
+						<span class="terminal-line"><span class="out">CLI</span>           <span class="ok">http://127.0.0.1:18084</span></span>
+						<span class="terminal-line">&nbsp;</span>
+						<span class="terminal-line"><span class="warn">expires in</span> <span class="cmd">4h 00m</span> <span class="out">— stop any time</span></span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
 
-				document.getElementById('stat-ctfs').textContent = liveCtfs;
-				document.getElementById('stat-missions').textContent = totalMissions;
-			})
-			.catch(err => console.error("Could not load stats", err));
-	</script>
+	<section class="section">
+		<div class="container">
+			<div class="feature-band">
+				<div class="feature-copy">
+					<p class="eyebrow">HOW IT WORKS</p>
+					<h2>Three pieces, one click.</h2>
+					<p>The site talks to a browser extension, the extension talks to a native app, and the app runs the lab. Each link is locked down, so you are never handing a stranger the keys to your machine.</p>
+				</div>
+				<div class="feature-copy">
+					<p class="eyebrow">WHAT YOU PRACTISE</p>
+					<h2>Real tool fluency.</h2>
+					<ul class="feature-list">
+						<li>Proxying, intercepting, and rewriting live traffic</li>
+						<li>Chaining requests, racing conditions, request smuggling</li>
+						<li>Throttle-aware brute force with smart wordlists</li>
+						<li>Session and token analysis across the stack</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<footer class="footer">
+		<div class="container">
+			<div class="footer-grid">
+				<div class="footer-brand">
+					<a href="index.html" class="nav-logo">
+						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+						FLAG FORGE
+					</a>
+					<p>Capture-the-flag labs for people who want to break things properly — on their own machines, with real tools.</p>
+				</div>
+				<div class="footer-col">
+					<h4>Platform</h4>
+					<ul class="footer-links">
+						<li><a href="challenges.html">Challenges</a></li>
+						<li><a href="jr-pentest.html">Jr Penetration Testing</a></li>
+						<li><a href="challenges.html#tracks">Tracks</a></li>
+					</ul>
+				</div>
+				<div class="footer-col">
+					<h4>Community</h4>
+					<ul class="footer-links">
+						<li><a href="members.html">Members</a></li>
+						<li><a href="apply.html">Apply</a></li>
+						<li><a href="https://github.com/FlagForge-CTF" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+					</ul>
+				</div>
+				<div class="footer-col">
+					<h4>Get started</h4>
+					<ul class="footer-links">
+						<li><a href="challenges.html">Install the launcher</a></li>
+						<li><a href="challenges.html">Install the extension</a></li>
+						<li><a href="challenges.html">Start Mission 1</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="footer-bottom">
+				<span>© 2026 Flag Forge</span>
+				<span class="mono">labs run locally · 127.0.0.1 only</span>
+			</div>
+		</div>
+	</footer>
+
+	<script src="js/home.js"></script>
 </body>
 </html>

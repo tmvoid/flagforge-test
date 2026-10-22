@@ -3,16 +3,19 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https://github.com https://avatars.githubusercontent.com https://images.unsplash.com; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+	<meta name="description" content="Flag Forge tracks — offensive, defensive, AI security and job simulations.">
 	<title>Challenges · Flag Forge</title>
 	<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 	<link rel="stylesheet" href="style.css">
 </head>
 <body>
+	<input type="checkbox" id="nav-open" class="nav-checkbox" hidden>
 	<div class="bg-grid"></div>
 
 	<nav class="navbar">
 		<a href="index.html" class="nav-logo">
-			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+			<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
 			FLAG FORGE
 		</a>
 		<div class="nav-links">
@@ -22,19 +25,28 @@
 			<a href="apply.html">Apply</a>
 		</div>
 		<div class="nav-actions">
-			<a href="challenges.html" class="btn-primary">Get Started</a>
+			<a href="jr-pentest.html" class="btn-primary small nav-cta">Get Started</a>
+			<label for="nav-open" class="nav-toggle" aria-label="Toggle navigation"><span></span></label>
 		</div>
 	</nav>
 
+	<div class="nav-mobile">
+		<a href="index.html">Home</a>
+		<a href="challenges.html" class="active">Challenges</a>
+		<a href="members.html">Members</a>
+		<a href="apply.html">Apply</a>
+		<a href="jr-pentest.html" class="btn-primary">Get Started</a>
+	</div>
+
 	<header class="page-header">
 		<div class="container">
+			<p class="eyebrow">TRACKS</p>
 			<h1>Choose your side.</h1>
-			<p class="lead">Attack or defend. Each track is a sequence of hands-on missions.</p>
+			<p class="lead">Attack or defend. Each track is a sequence of hands-on missions that run entirely on your own machine.</p>
 		</div>
 	</header>
 
-	<main class="container landing-main">
-		
+	<main class="container landing-main" id="tracks">
 		<div class="category-header category-red">
 			<h2>Red Teaming</h2>
 			<p>Offensive security, exploitation, and vulnerability discovery.</p>
@@ -83,7 +95,6 @@
 			</div>
 		</div>
 
-		<!-- JOB SIMULATIONS SECTION -->
 		<div class="category-header category-jobs">
 			<h2>Job Simulations</h2>
 			<p>Full end-to-end engagements mirroring real-world tasks.</p>
@@ -98,7 +109,48 @@
 				<div class="card-footer"><span>In Development</span></div>
 			</div>
 		</div>
-
 	</main>
+
+	<footer class="footer">
+		<div class="container">
+			<div class="footer-grid">
+				<div class="footer-brand">
+					<a href="index.html" class="nav-logo">
+						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+						FLAG FORGE
+					</a>
+					<p>Capture-the-flag labs for people who want to break things properly — on their own machines, with real tools.</p>
+				</div>
+				<div class="footer-col">
+					<h4>Platform</h4>
+					<ul class="footer-links">
+						<li><a href="challenges.html">Challenges</a></li>
+						<li><a href="jr-pentest.html">Jr Penetration Testing</a></li>
+						<li><a href="challenges.html#tracks">Tracks</a></li>
+					</ul>
+				</div>
+				<div class="footer-col">
+					<h4>Community</h4>
+					<ul class="footer-links">
+						<li><a href="members.html">Members</a></li>
+						<li><a href="apply.html">Apply</a></li>
+						<li><a href="https://github.com/FlagForge-CTF" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+					</ul>
+				</div>
+				<div class="footer-col">
+					<h4>Get started</h4>
+					<ul class="footer-links">
+						<li><a href="challenges.html">Install the launcher</a></li>
+						<li><a href="challenges.html">Install the extension</a></li>
+						<li><a href="jr-pentest.html">Start Mission 1</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="footer-bottom">
+				<span>© 2026 Flag Forge</span>
+				<span class="mono">labs run locally · 127.0.0.1 only</span>
+			</div>
+		</div>
+	</footer>
 </body>
 </html>

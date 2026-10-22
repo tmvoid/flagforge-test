@@ -1,24 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://github.com https://avatars.githubusercontent.com https://images.unsplash.com; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https://github.com https://avatars.githubusercontent.com https://images.unsplash.com; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 	<meta name="description" content="Challenge details, README and lab launcher for Flag Forge.">
 	<title>Challenge · Flag Forge</title>
 	<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 	<link rel="stylesheet" href="style.css">
 	<link rel="stylesheet" href="challenge.css">
 </head>
-
 <body class="challenge">
+	<input type="checkbox" id="nav-open" class="nav-checkbox" hidden>
 	<div class="bg-grid"></div>
 
-	<!-- NAVBAR -->
 	<nav class="navbar">
 		<a href="index.html" class="nav-logo">
-			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+			<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
 			FLAG FORGE
 		</a>
 		<div class="nav-links">
@@ -28,16 +26,25 @@
 			<a href="apply.html">Apply</a>
 		</div>
 		<div class="nav-actions">
-			<a href="challenges.html" class="btn-primary">Get Started</a>
+			<a href="challenges.html" class="btn-primary small nav-cta">Get Started</a>
+			<label for="nav-open" class="nav-toggle" aria-label="Toggle navigation"><span></span></label>
 		</div>
 	</nav>
 
-	<!-- MAIN CONTAINER -->
-	<div class="container challenge" style="padding-top: 100px;">
-		<main id="app">
-			<p class="muted" style="color: var(--text-muted);">Loading challenge...</p>
-			<noscript><p>This page needs JavaScript to show the challenge and start its lab.</p></noscript>
-		</main>
+	<div class="nav-mobile">
+		<a href="index.html">Home</a>
+		<a href="challenges.html" class="active">Challenges</a>
+		<a href="members.html">Members</a>
+		<a href="apply.html">Apply</a>
+		<a href="challenges.html" class="btn-primary">Get Started</a>
+	</div>
+
+	<main id="app">
+		<p class="muted loading-note">Loading challenge…</p>
+		<noscript><p>This page needs JavaScript to show the challenge and start its lab.</p></noscript>
+	</main>
+
+	<div class="container">
 		<p class="footer-note">Labs run on your own machine and listen on 127.0.0.1 only. Nothing is attacked over the internet.</p>
 	</div>
 
@@ -47,5 +54,4 @@
 	<script src="js/silentproxy-client.js"></script>
 	<script src="js/challenge.js"></script>
 </body>
-
 </html>

@@ -13,6 +13,15 @@ index.html ──▶ jr-pentest.html ──▶ challenge.html?c=burp-suite
                                     └─ sidebar          (launcher downloads per OS, extension links)
 ```
 
+## Design system
+
+`DESIGN.md` in this folder is the source of truth for the site's look: tokens (colour, spacing,
+radius, type), the mesh gradient, elevation, and the component list.
+`style.css` holds the shared system, `challenge.css` the challenge page on top of it.
+
+The one decorative element is a **multi-stop mesh gradient** (cyan → teal → green → amber) behind the
+hero. It appears twice on the site and is never miniaturised.
+
 ## Run it locally
 
 ```bash
@@ -37,10 +46,11 @@ To test the lab buttons locally, build the extension with `--dev-site http://loc
 |---|---|
 | Add a challenge | Add an entry to `data/challenges.json`, create `challenges/<slug>/README.md`, add a card in `jr-pentest.html` linking to `challenge.html?c=<slug>`. |
 | Make a challenge playable | Set `"status": "live"` and list its `labs`. Each lab `id` must match an id in the launcher's `labs.json` (`mission-1-recon`, …). |
-| Add a contributor | Add `{ "name", "role", "github", "photo" }` under that challenge's `contributors`. Put the photo in `assets/contributors/` and use that path, or leave `photo` empty to use their GitHub avatar, or leave both empty for initials. |
+| Add a contributor | Add `{ "name", "role", "github", "photo" }` under that challenge's `contributors`. Put the photo in `assets/contributors/` and use that path, or leave `photo` empty to show their initials. `github` must be a plain handle. |
 | Change the README | Edit `challenges/<slug>/README.md` (Markdown: headings, lists, tables, code blocks, links, images). |
 
 Contributors in the data file: only Srinish Basu is listed for the Burp challenge so far. Add the others with the same shape.
+Every challenge needs a `contributors` array — the site test rejects a challenge without one.
 
 ## How the Start button works
 
@@ -52,17 +62,23 @@ Only one lab runs at a time; starting another one asks first.
 
 ## Security notes
 
-- A Content-Security-Policy on every page allows only this site's own scripts and styles (no inline code, no remote scripts).
-  Images may come from this site and from GitHub (contributor avatars).
+- A Content-Security-Policy on every page allows only this site's own scripts and styles — **no inline code, no inline
+  style attributes, no remote scripts**. Images may come from this site and from GitHub (contributor avatars).
+  Because `style-src 'self'` is strict, **never set a `style` attribute**: use a class, or set a CSSOM property
+  (`el.style.width = …`), which CSP does not block.
 - Text from `challenges.json` and READMEs is always inserted as plain text. The README renderer ignores raw HTML and only keeps
   `https` and relative links.
 - Lab links are only clickable for `127.0.0.1` / `localhost`.
+- Contributor `github` handles and `photo` paths are validated before they become a link or an `img` tag.
 
 ## Tests
 
 ```bash
-npm test      # 37 tests: README renderer and XSS cases, lab controller logic, page rendering, link/CSP checks
+npm test      # 38 tests: README renderer and XSS cases, lab controller logic, page rendering, link/CSP checks
 ```
 
-They run on a small fake DOM, so no browser is needed. **Not verified:** the pages have not been opened in a real browser, so
+They run on a small fake DOM, so no browser is needed. The suite also enforces the CSP rules above: every page
+must carry the same policy, and no page may contain an inline script, style attribute, or event handler.
+
+**Not verified:** the pages have not been opened in a real browser on every screen size, so
 check the layout once on desktop and phone, and try the full flow with the real extension and launcher.

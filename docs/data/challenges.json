@@ -35,6 +35,9 @@
 			],
 			"readme": "challenges/burp-suite/README.md",
 			"repo": "https://github.com/FlagForge-CTF",
+			"contributors": [
+				{ "name": "Srinish Basu", "role": "Author", "github": "srinishbasu-cmd" }
+			],
 			"briefing": {
 				"intro": [
 					"You are Nils Berg, an external penetration tester hired by a whistleblower inside MegaCorp - a mid-sized fintech under investigation for fraud. The whistleblower has deliberately exposed fragments of evidence across nine services on the company's external perimeter. Each fragment is a flag, formatted FLAG{...}.",
@@ -54,11 +57,11 @@
 				]
 			},
 			"labs": [
-				{ 
-					"id": "mission-1-recon", 
-					"title": "Mission 1: Setup & Recon", 
-					"summary": "Configure Burp against MegaCorp's fussy environments: CA certificates, listeners, client certs, SOCKS upstream, NTLM, HTTP/2.", 
-					"flags": 9, 
+				{
+					"id": "mission-1-recon",
+					"title": "Mission 1: Setup & Recon",
+					"summary": "Configure Burp against MegaCorp's fussy environments: CA certificates, listeners, client certs, SOCKS upstream, NTLM, HTTP/2.",
+					"flags": 9,
 					"time": "3–5 h",
 					"objectives": [
 						{ "n": 1, "title": "The HTTPS Portal", "task": "A MegaCorp portal at portal.megacorp.local hides something in its response headers. You will only see it if your tool is intercepting TLS traffic." },
@@ -94,23 +97,57 @@
 			"slug": "nmap",
 			"track": "jr-pentest",
 			"title": "Nmap-CTF",
+			"codename": "Operation Silent Proxy",
 			"tool": "Nmap",
 			"difficulty": "Hard",
 			"status": "coming-soon",
 			"tagline": "Hands-on challenges for Nmap, one of the tools the Final CTF requires.",
 			"description": [ "This tool-specific CTF prepares you for the Final Jr Penetration Testing CTF." ],
-			"facts": [], "learn": [], "requirements": [], "readme": "challenges/nmap/README.md", "repo": "https://github.com/FlagForge-CTF", "labs": []
+			"facts": [], "learn": [], "requirements": [],
+			"readme": "challenges/nmap/README.md",
+			"repo": "https://github.com/FlagForge-CTF",
+			"contributors": [
+				{ "name": "Tanmay Bharadwaj", "role": "Author", "github": "tmvoid" }
+			],
+			"labs": []
 		},
 		{
 			"slug": "hydra",
 			"track": "jr-pentest",
 			"title": "Hydra-CTF",
+			"codename": "Operation Silent Proxy",
 			"tool": "Hydra",
 			"difficulty": "Hard",
 			"status": "coming-soon",
 			"tagline": "Hands-on challenges for Hydra, one of the tools the Final CTF requires.",
 			"description": [ "This tool-specific CTF prepares you for the Final Jr Penetration Testing CTF." ],
-			"facts": [], "learn": [], "requirements": [], "readme": "challenges/hydra/README.md", "repo": "https://github.com/FlagForge-CTF", "labs": []
+			"facts": [], "learn": [], "requirements": [],
+			"readme": "challenges/hydra/README.md",
+			"repo": "https://github.com/FlagForge-CTF",
+			"contributors": [
+				{ "name": "Kalash Chanodkar", "role": "Author", "github": "kalashchanodkar-netizen" }
+			],
+			"labs": []
+		},
+		{
+			"slug": "final",
+			"track": "jr-pentest",
+			"title": "Final-CTF",
+			"codename": "Operation Silent Proxy",
+			"tool": "Burp Suite, Nmap and Hydra",
+			"difficulty": "Extreme",
+			"status": "coming-soon",
+			"tagline": "The final challenge. It requires every tool you practised in the tool-specific CTFs.",
+			"description": [ "This is the Jr Penetration Testing CTF. Bring everything you learned across the tool-specific tracks." ],
+			"facts": [], "learn": [], "requirements": [],
+			"readme": "challenges/final/README.md",
+			"repo": "https://github.com/FlagForge-CTF",
+			"contributors": [
+				{ "name": "Srinish Basu", "role": "Author", "github": "srinishbasu-cmd" },
+				{ "name": "Tanmay Bharadwaj", "role": "Author", "github": "tmvoid" },
+				{ "name": "Kalash Chanodkar", "role": "Author", "github": "kalashchanodkar-netizen" }
+			],
+			"labs": []
 		}
 	]
 }
