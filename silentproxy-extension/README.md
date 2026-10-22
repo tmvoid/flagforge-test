@@ -16,7 +16,7 @@ website JS ──SilentProxy SDK──▶ content script ──▶ background �
 | `src/background.js` | only component that talks to the launcher; validates senders and requests, routes replies/progress, badge + polling alarm, error mapping |
 | `src/content.js` | injected **only** on your website; postMessage ⇄ background, checks origin/source/namespace |
 | `src/common.js` | shared request validation (action + field whitelist, lab-id regex) and disconnect→error mapping |
-| `src/popup.*` | status, Start/Stop/+1 hour, Docker warnings, "launcher missing" help (renders with `textContent` only) |
+| `src/popup.*` | status, Start/Stop/+1 hour, Docker warnings, "launcher missing" help (renders with `textContent` only). Styled on the site's design system — see `../docs/DESIGN.md` |
 | `sdk/silentproxy-client.js` | the 100-line script your website includes |
 | `tools/build.py` | builds `dist/chrome` + `dist/firefox` (+ zips) for a given website URL |
 | `tools/make_key.py` | makes the Chrome signing key so the extension ID is stable, prints the ID |

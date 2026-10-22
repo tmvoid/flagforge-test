@@ -167,6 +167,12 @@
 	}
 
 	/* ── Flag submission (per mission) ────────────────────────── */
+	/* The mission list is rebuilt whenever the controller changes, and the controller polls
+	   every 20s while a lab runs. Without this, a half-typed flag and the caret would be
+	   thrown away mid-keystroke. */
+	const flagDrafts = Object.create(null);
+	const flagInputs = Object.create(null);
+
 	function flagStore(key) {
 		let mem = [];
 		const ls = (function () {
@@ -185,7 +191,13 @@
 		const store = flagStore("ff_flags_" + lab.id);
 		const found = new Set(store.read());
 
-		const input = h("input", { type: "text", class: "form-input", placeholder: "FLAG{...}", "aria-label": "Submit a flag" });
+		const input = h("input", {
+			type: "text", class: "form-input", placeholder: "FLAG{...}",
+			"aria-label": "Submit a flag", "data-flag-input": lab.id
+		});
+		if (flagDrafts[lab.id]) input.value = flagDrafts[lab.id];
+		input.addEventListener("input", () => { flagDrafts[lab.id] = input.value; });
+		flagInputs[lab.id] = input;
 		const msg = h("div", { class: "flag-msg", role: "status" });
 		const countText = h("span", { class: "mono", text: found.size + "/" + total + " flags" });
 		const percentText = h("span", { class: "mono flag-percent", text: Math.round((found.size / total) * 100) + "%" });
@@ -326,6 +338,12 @@
 		const missions = h("div", { class: "mission-list" });
 
 		const render = () => {
+			// Remember where the caret was before the list is rebuilt, so a poll that lands
+			// mid-keystroke does not throw the typing away.
+			const active = doc.activeElement;
+			const focusedLab = active && active.getAttribute ? active.getAttribute("data-flag-input") : null;
+			const caret = focusedLab && active.selectionStart != null ? active.selectionStart : null;
+
 			clear(missions);
 
 			ch.labs.forEach((lab, index) => {
@@ -417,6 +435,14 @@
 				if (!othersSlot.firstChild) othersSlot.append(othersBanner);
 			} else if (othersSlot.firstChild) {
 				othersSlot.removeChild(othersSlot.firstChild);
+			}
+
+			if (focusedLab) {
+				const box = flagInputs[focusedLab];
+				if (box && box.focus) {
+					box.focus();
+					if (caret != null && box.setSelectionRange) box.setSelectionRange(caret, caret);
+				}
 			}
 		};
 
