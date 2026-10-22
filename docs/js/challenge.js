@@ -55,15 +55,6 @@
 	}
 
 	/* ── Small helpers ────────────────────────────────────────── */
-	function copyButton(text) {
-		const b = h("button", { type: "button", class: "btn-ghost copy", text: "Copy" });
-		b.addEventListener("click", async () => {
-			try { await env.navigator.clipboard.writeText(text); b.textContent = "Copied!"; } catch (_e) { b.textContent = "Error"; }
-			if (env.setTimeout) env.setTimeout(() => { b.textContent = "Copy"; }, 1500);
-		});
-		return b;
-	}
-
 	function initials(name) {
 		const parts = String(name || "").trim().split(/\s+/).filter((w) => w && /[A-Za-z0-9]/.test(w[0]));
 		return parts.slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "?";
@@ -506,7 +497,7 @@
 		);
 	}
 
-	function renderChallenge(ch, data, ctlFactory) {
+	function renderChallenge(ch, ctlFactory) {
 		const os = detectOS();
 		const live = ch.status === "live" && (ch.labs || []).length > 0;
 		let ctl = null;
@@ -556,7 +547,7 @@
 		if (!ch) { showMessage(app, "Challenge not found", "That challenge does not exist."); return null; }
 		doc.title = ch.title + " · " + CFG.siteName;
 
-		const { page, ctl } = renderChallenge(ch, data, (ids) => env.createController(env.sp, ids));
+		const { page, ctl } = renderChallenge(ch, (ids) => env.createController(env.sp, ids));
 		clear(app);
 		app.append(page);
 
