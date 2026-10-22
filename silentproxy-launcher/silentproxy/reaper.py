@@ -24,25 +24,6 @@ def self_command() -> List[str]:
     return [sys.executable, "-m", "silentproxy"]
 
 
-def pid_alive(pid: int) -> bool:
-    if not pid:
-        return False
-    if sys.platform == "win32":
-        import ctypes
-        handle = ctypes.windll.kernel32.OpenProcess(0x1000, False, pid)  # QUERY_LIMITED_INFORMATION
-        if handle:
-            ctypes.windll.kernel32.CloseHandle(handle)
-            return True
-        return False
-    try:
-        os.kill(pid, 0)
-    except ProcessLookupError:
-        return False
-    except PermissionError:
-        return True
-    return True
-
-
 def spawn(lab_id: str) -> int:
     """Start a detached reaper for lab_id and return its pid."""
     env = dict(os.environ)

@@ -97,12 +97,6 @@ class Docker:
             raise LabError("TIMEOUT", "Docker took too long and was stopped.", hint="Retry; slow networks need longer to pull images.")
         return subprocess.CompletedProcess(cmd, proc.returncode, out, "")
 
-    def _ok(self, args, **kw) -> str:
-        res = self.run(args, **kw)
-        if res.returncode != 0:
-            raise classify(res.stdout) or LabError("DOCKER_FAILED", _tail(res.stdout) or "Docker command failed.")
-        return res.stdout
-
     # -- health -----------------------------------------------------------
     def doctor(self) -> dict:
         info = {"docker_installed": bool(self.binary), "daemon_running": False, "compose_ok": False}

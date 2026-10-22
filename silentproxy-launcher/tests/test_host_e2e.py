@@ -1,11 +1,9 @@
 """Spawn the real host process and talk to it exactly like a browser does."""
 import json
-import os
 import struct
 import subprocess
 import sys
 import tempfile
-import threading
 import time
 import unittest
 from pathlib import Path
