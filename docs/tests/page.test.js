@@ -144,7 +144,8 @@ test('install commands per OS, with the Chrome extension id filled in when confi
 	assert.equal(mk('Linux x86_64').detectOS(), 'linux');
 	assert.equal(mk('Win32').installCommands('windows').firefox, '.\\silentproxy-windows.exe install');
 	assert.match(mk('MacIntel').installCommands('macos').firefox, /xattr -d com\.apple\.quarantine silentproxy-macos.*\.\/silentproxy-macos install/);
-	assert.match(mk('Linux').installCommands('linux').chrome, /--chrome-id <extension-id>/);
+	const noId = { ...CONFIG, extension: { ...CONFIG.extension, chromeId: '' } };
+	assert.match(mk('Linux', noId).installCommands('linux').chrome, /--chrome-id <extension-id>/);
 	const withId = { ...CONFIG, extension: { ...CONFIG.extension, chromeId: 'abcdefghijklmnopabcdefghijklmnop' } };
 	assert.match(mk('Linux', withId).installCommands('linux').chrome, /--chrome-id abcdefghijklmnopabcdefghijklmnop$/);
 });

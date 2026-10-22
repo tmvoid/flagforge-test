@@ -127,6 +127,26 @@ Updates `labs.json` with checksum/size. Upload zip to that GitHub Release, commi
 
 ---
 
+## Deployment
+
+**Live site:** https://tmvoid.github.io/flagforge-test/
+
+`tmvoid/flagforge-test` is a **fork** of `srinishbasu-cmd/flagforge-test`. You have push rights on the fork
+and pull-only on upstream.
+
+- **Pages**: enabled on the fork, deploys from `main` → `/docs`. Pushing to `main` rebuilds it automatically.
+- **Lab catalogue**: the launcher reads `labs.json` from **upstream** (`srinishbasu-cmd`) via `REGISTRY_URL` in
+  `silentproxy/config.py`. Lab zips live in upstream releases. Don't repoint these at the fork.
+- **Launcher binaries + extension**: built by `.github/workflows/launcher-release.yml` on a `launcher-v*` tag.
+  Tag `launcher-v0.1.0` to publish; the release gets all three launcher binaries plus `docs/downloads/silentproxy-firefox.xpi`.
+- **Extension site binding**: the extension only runs on the URL it was built for. `tools/build.py`'s `DEFAULT_SITE`
+  is the live site. After changing it, rebuild and copy `dist/silentproxy-extension-firefox-*.zip` back to
+  `docs/downloads/silentproxy-firefox.xpi`.
+- **Chrome extension ID**: comes from `keys/chrome-key.pem` (gitignored, private). `keys/chrome-key.pub.b64` is
+  committed, so the ID is reproducible. Losing the `.pem` changes the ID and every player's `install --chrome-id`.
+
+---
+
 ## Common Gotchas
 
 | Issue | Cause | Fix |

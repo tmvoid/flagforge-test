@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SRC, DIST = ROOT / "src", ROOT / "dist"
 GECKO_ID = "silentproxy-launcher@operationsilentproxy.local"  # must equal the launcher's FIREFOX_EXTENSION_ID
 FILES = ["common.js", "background.js", "content.js", "popup.html", "popup.css", "popup.js"]
-DEFAULT_SITE = "https://cybersecurity-ctf-org.github.io/operation-silent-proxy/"
+DEFAULT_SITE = "https://tmvoid.github.io/flagforge-test/"
 
 
 def check_site(url: str, dev: bool) -> str:

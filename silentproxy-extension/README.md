@@ -26,13 +26,13 @@ website JS ──SilentProxy SDK──▶ content script ──▶ background �
 
 ```bash
 python3 tools/make_key.py            # once. Prints the Chrome extension ID; keep keys/chrome-key.pem private
-python3 tools/build.py --site https://cybersecurity-ctf-org.github.io/operation-silent-proxy/
+python3 tools/build.py --site https://tmvoid.github.io/flagforge-test/
 # local testing build (adds localhost as an allowed site - never ship this one):
-python3 tools/build.py --site https://cybersecurity-ctf-org.github.io/operation-silent-proxy/ --dev-site http://localhost:8000/
+python3 tools/build.py --site https://tmvoid.github.io/flagforge-test/ --dev-site http://localhost:8000/
 ```
 
 `--site` is the URL prefix of your GitHub Pages site (must end with `/`). Only pages under that prefix get the content script,
-and the background re-checks the full URL before accepting any request. **Change the default in `tools/build.py` if the real repo name differs.**
+and the background re-checks the full URL before accepting any request. The default in `tools/build.py` is the live site (`https://tmvoid.github.io/flagforge-test/`); change it if the repo moves.
 
 ## Install for testing
 

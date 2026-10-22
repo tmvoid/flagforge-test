@@ -33,11 +33,17 @@ To test the lab buttons locally, build the extension with `--dev-site http://loc
 
 ## Publish on GitHub Pages
 
-1. Push this folder to a GitHub repo and enable *Settings → Pages → Deploy from branch*.
-2. Build the extension for that exact address, for example
-   `python3 tools/build.py --site https://<org>.github.io/<repo>/` in `silentproxy-extension`.
-   The extension only works on the site address it was built for.
-3. Edit `js/config.js`: the GitHub org/repo of the launcher releases, the extension store links, and `chromeId`
+The site is live at **https://tmvoid.github.io/flagforge-test/** — Pages is enabled on `tmvoid/flagforge-test`
+and deploys from `main` / `/docs`.
+
+To republish after a change:
+
+1. `git push origin main` — Pages rebuilds on its own.
+2. Build the extension for that exact address:
+   `python3 tools/build.py --site https://tmvoid.github.io/flagforge-test/` in `silentproxy-extension`.
+   The extension only works on the site address it was built for, so the built `.xpi` must be copied back to
+   `docs/downloads/silentproxy-firefox.xpi` and committed.
+3. `js/config.js` holds the GitHub org/repo of the launcher releases, the extension store links, and `chromeId`
    (printed by `tools/make_key.py`). `chromeId` fills in the Chrome install command shown to players.
 
 ## Add or edit things

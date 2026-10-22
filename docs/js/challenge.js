@@ -454,7 +454,7 @@
 					h("a", { class: "btn-secondary small", href: firefoxUrl, ...(isXpi ? {} : { target: "_blank", rel: "noopener noreferrer" }), text: "Firefox" }),
 					h("a", { class: "btn-secondary small", href: chromeUrl, target: "_blank", rel: "noopener noreferrer", text: "Chrome / Edge / Brave" })
 				),
-				h("p", { class: "side-note", text: "Firefox: open about:debugging, choose Load Temporary Add-on, pick the manifest.json, then Click Allow, then Add." })
+				h("p", { class: "side-note", text: "Firefox: download the .xpi, then open about:debugging, choose This Firefox → Load Temporary Add-on, pick the downloaded file, and Click Allow, then Add." })
 			)
 		];
 	}

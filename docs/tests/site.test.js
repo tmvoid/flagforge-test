@@ -82,7 +82,7 @@ test('download links point at GitHub and use the launcher release file names', (
 		assert.match(url, /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\//);
 	}
 	for (const os of ['linux', 'macos', 'windows']) assert.ok(CFG.launcher.downloads[os].endsWith('/' + CFG.launcher.fileNames[os]));
-	const wf = path.join(ROOT, '..', 'silentproxy-launcher', '.github', 'workflows', 'release.yml');
+	const wf = path.join(ROOT, '..', '.github', 'workflows', 'launcher-release.yml');
 	if (fs.existsSync(wf)) {
 		const text = fs.readFileSync(wf, 'utf8');
 		for (const name of Object.values(CFG.launcher.fileNames)) assert.ok(text.includes(name), name + ' not produced by the launcher release workflow');
