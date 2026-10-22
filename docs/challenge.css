@@ -216,7 +216,9 @@
 .alert-info { background: var(--accent-soft); border-color: rgba(46, 229, 157, 0.28); color: var(--accent); }
 .alert-info .alert-hint { color: var(--body); }
 
-/* Progress — the launcher streams stage/percent while it downloads and boots the lab. */
+/* Progress — the launcher streams stage/percent while it downloads and boots the lab.
+   Only the download stage reports a percent, so every other stage gets an indeterminate bar
+   rather than a number that would jump backwards. */
 .progress { display: flex; align-items: center; gap: var(--sp-3); width: 100%; }
 .progress-track {
 	flex-grow: 1;
@@ -231,7 +233,34 @@
 	box-shadow: 0 0 10px var(--accent);
 	transition: width 0.4s var(--ease);
 }
+.progress-fill.indeterminate {
+	width: 35%;
+	animation: progress-slide 1.4s var(--ease) infinite;
+}
+@keyframes progress-slide {
+	0% { transform: translateX(-110%); }
+	100% { transform: translateX(320%); }
+}
 .progress-pct { font-size: 0.75rem; color: var(--mute); min-width: 3ch; text-align: right; }
+
+/* Banners keep their element between renders, so they need a slot that collapses when empty. */
+.slot:empty { display: none; }
+.alert-hint:empty { display: none; }
+
+/* Per-service state reported by the launcher. */
+.service-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--sp-3);
+	font-family: var(--font-mono);
+	font-size: 0.8125rem;
+	color: var(--body);
+}
+.service-state { color: var(--mute); }
+.service-state.running { color: var(--accent); }
+.service-state.exited,
+.service-state.dead { color: var(--danger); }
 
 /* --------------------------------------------------------------------------
    6. FLAG SUBMISSION
