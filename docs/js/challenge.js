@@ -83,6 +83,35 @@
 		return [t.slice(0, i), h("span", { class: "title-suffix", text: t.slice(i) })];
 	}
 
+	/* A progress bar.
+	   The launcher only sends a percent for the stages that can be measured (the download);
+	   every other stage omits it. Rendering those as 0% made the bar jump backwards, so a
+	   stage without a percent gets an indeterminate bar instead of a number.
+	   The width is set through the CSSOM, which the strict CSP allows. */
+	function progressBar(percent, label) {
+		const known = percent !== undefined && percent !== null && percent !== "";
+		const track = h("div", { class: "progress-track", role: "progressbar" });
+		if (label) track.setAttribute("aria-label", label);
+
+		let fill;
+		if (known) {
+			const pct = Math.max(0, Math.min(100, Math.round(Number(percent) || 0)));
+			fill = h("div", { class: "progress-fill" });
+			fill.style.width = pct + "%";
+			track.setAttribute("aria-valuenow", String(pct));
+			track.setAttribute("aria-valuemin", "0");
+			track.setAttribute("aria-valuemax", "100");
+		} else {
+			fill = h("div", { class: "progress-fill indeterminate" });
+		}
+		track.append(fill);
+
+		return h("div", { class: "progress" },
+			track,
+			h("span", { class: "mono progress-pct", "aria-hidden": "true", text: known ? Math.max(0, Math.min(100, Math.round(Number(percent) || 0))) + "%" : "" })
+		);
+	}
+
 	/* ── Terminal ─────────────────────────────────────────────── */
 	function terminalBox(lines) {
 		return h("div", { class: "terminal" },
@@ -250,9 +279,53 @@
 	function missionPanel(ch, ctl) {
 		const container = h("section", { class: "panel", id: "launch" });
 
+		const head = h("div", { class: "panel-head panel-head-row" },
+			h("div", {},
+				h("h2", { text: "Missions" }),
+				h("span", { class: "panel-sub", text: "Progress through the operation" })
+			),
+			h("span", { class: "mono panel-count", text: String(ch.labs.length).padStart(2, "0") + " missions" })
+		);
+
+		/* The three banners live outside the re-rendered list and keep their element between
+		   renders. A live region that is torn down and re-inserted on every poll is announced
+		   again on every poll; one that is created once and updated in place is not. */
+		const noticeMsg = h("strong", { text: "" });
+		const noticeHint = h("div", { class: "alert-hint" });
+		const noticeBanner = h("div", { class: "alert alert-warn", role: "alert" },
+			noticeMsg,
+			noticeHint,
+			h("div", { class: "alert-actions" },
+				h("button", { type: "button", class: "btn-ghost", text: "Check again", onclick: () => ctl.checkSetup() })
+			)
+		);
+		const noticeSlot = h("div", { class: "slot" });
+
+		const othersText = h("div", { class: "alert-hint" });
+		const othersBanner = h("div", { class: "alert alert-info", role: "status" },
+			h("strong", { text: "Another lab is running." }),
+			othersText
+		);
+		const othersSlot = h("div", { class: "slot" });
+
+		const conflictText = h("div", { class: "alert-hint" });
+		const conflictBanner = h("div", { class: "alert alert-warn", role: "alert" },
+			h("strong", { text: "Another lab is already running." }),
+			conflictText,
+			h("div", { class: "alert-actions" },
+				h("button", {
+					type: "button", class: "btn-primary small", text: "Stop it and start",
+					onclick: () => { const c = ctl.state.conflict; if (c) ctl.start(c.labId, { replace: true }); }
+				}),
+				h("button", { type: "button", class: "btn-ghost", text: "Keep it running", onclick: () => ctl.dismissConflict() })
+			)
+		);
+		const conflictSlot = h("div", { class: "slot" });
+
+		const missions = h("div", { class: "mission-list" });
+
 		const render = () => {
-			clear(container);
-			const missions = h("div", { class: "mission-list" });
+			clear(missions);
 
 			ch.labs.forEach((lab, index) => {
 				const L = ctl.state.labs[lab.id];
@@ -261,26 +334,40 @@
 
 				let controls;
 				if (starting) {
+					// The launcher streams stage-by-stage progress while it downloads and boots the lab.
+					const p = L.progress || {};
 					controls = h("div", { class: "mission-side" },
-						h("span", { class: "badge live" }, h("span", { class: "live-dot animate" }), "Starting…"));
+						h("span", { class: "badge live" }, h("span", { class: "live-dot animate" }), p.message || "Starting…"),
+						progressBar(p.percent, p.message)
+					);
 				} else if (running) {
 					const urls = L.urls || [];
 					const mainUrl = urls.find((u) => u.link) || urls[0];
 					const otherUrls = urls.filter((u) => u !== mainUrl);
+					const services = L.services || [];
 
 					controls = h("div", { class: "mission-side" },
 						h("span", { class: "badge live" }, h("span", { class: "live-dot" }), "Running"),
+						// The launcher reports ready=false when some containers are still warming up,
+						// so the links are not worth clicking yet.
+						L.ready === false ? h("span", { class: "badge", text: "Still warming up" }) : null,
 						h("span", { class: "mono mission-ttl", "data-expires": L.expiresAt, text: fmtLeft(L.expiresAt - Date.now()) }),
 						mainUrl ? h("a", { class: "btn-primary small", href: mainUrl.url, target: "_blank", rel: "noopener noreferrer", text: "Open " + mainUrl.name }) : null,
 						h("div", { class: "mission-actions" },
 							h("button", { type: "button", class: "btn-ghost", text: "+1 hour", onclick: () => ctl.extend(lab.id, 1) }),
 							h("button", { type: "button", class: "btn-danger", text: "Stop lab", onclick: () => ctl.stop(lab.id) })
 						),
-						otherUrls.length ? h("details", { class: "disclosure compact" },
+						(otherUrls.length || services.length) ? h("details", { class: "disclosure compact" },
 							h("summary", { text: "All services" }),
-							h("div", { class: "service-list" }, otherUrls.map((u) =>
-								u.link ? h("a", { href: u.url, target: "_blank", rel: "noopener noreferrer", text: u.name }) : h("span", { text: u.name })
-							))
+							h("div", { class: "service-list" },
+								services.map((s) => h("div", { class: "service-row" },
+									h("span", { class: "service-name", text: s.service || "" }),
+									h("span", { class: "service-state " + (s.state || ""), text: s.state || "" })
+								)),
+								otherUrls.map((u) =>
+									u.link ? h("a", { href: u.url, target: "_blank", rel: "noopener noreferrer", text: u.name }) : h("span", { text: u.name })
+								)
+							)
 						) : null
 					);
 				} else {
@@ -306,30 +393,35 @@
 
 			const conflict = ctl.state.conflict;
 			if (conflict) {
-				missions.append(h("div", { class: "alert alert-warn", role: "alert" },
-					h("strong", { text: "Another lab is already running." }),
-					h("div", { class: "alert-hint", text: "Running now: " + (conflict.running || []).join(", ") }),
-					h("div", { class: "alert-actions" },
-						h("button", { type: "button", class: "btn-primary small", text: "Stop it and start", onclick: () => ctl.start(conflict.labId, { replace: true }) }),
-						h("button", { type: "button", class: "btn-ghost", text: "Keep it running", onclick: () => ctl.dismissConflict() })
-					)
-				));
+				conflictText.textContent = "Running now: " + (conflict.running || []).join(", ");
+				if (!conflictSlot.firstChild) conflictSlot.append(conflictBanner);
+			} else if (conflictSlot.firstChild) {
+				conflictSlot.removeChild(conflictSlot.firstChild);
 			}
 
-			container.append(
-				h("div", { class: "panel-head panel-head-row" },
-					h("div", {},
-						h("h2", { text: "Missions" }),
-						h("span", { class: "panel-sub", text: "Progress through the operation" })
-					),
-					h("span", { class: "mono panel-count", text: String(ch.labs.length).padStart(2, "0") + " missions" })
-				)
-			);
-			container.append(missions);
+			// A failed status poll used to be swallowed: the lab kept looking like it was running.
+			const notice = ctl.state.notice;
+			if (notice) {
+				noticeMsg.textContent = notice.message || "Lost contact with the launcher.";
+				noticeHint.textContent = notice.hint || "";
+				if (!noticeSlot.firstChild) noticeSlot.append(noticeBanner);
+			} else if (noticeSlot.firstChild) {
+				noticeSlot.removeChild(noticeSlot.firstChild);
+			}
+
+			// Labs running for a different challenge still count against the one-lab limit.
+			const others = ctl.state.others || [];
+			if (others.length) {
+				othersText.textContent = "Still up: " + others.join(", ");
+				if (!othersSlot.firstChild) othersSlot.append(othersBanner);
+			} else if (othersSlot.firstChild) {
+				othersSlot.removeChild(othersSlot.firstChild);
+			}
 		};
 
 		ctl.onChange(render);
 		render();
+		container.append(head, noticeSlot, othersSlot, conflictSlot, missions);
 		return container;
 	}
 

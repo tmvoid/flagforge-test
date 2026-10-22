@@ -23,6 +23,10 @@ def sync() -> bool:
         return False
     if not SOURCE.is_file():
         sys.exit(f"missing {SOURCE}")
+    if TARGET.is_file() and TARGET.read_bytes() != SOURCE.read_bytes():
+        # The website's copy is a build artifact, never the place to edit the SDK. Say so
+        # rather than silently discarding whatever was there.
+        print(f"note: replacing the website's SDK copy at {TARGET} with the canonical one")
     shutil.copyfile(SOURCE, TARGET)
     print(f"synced {SOURCE.relative_to(ROOT.parent)} -> {TARGET.relative_to(ROOT.parent)}")
     return True
