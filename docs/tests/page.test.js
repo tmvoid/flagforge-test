@@ -112,6 +112,32 @@ test('another lab running: offers replace and retries with replace', async () =>
 	assert.equal(sp.calls[1][2], true);
 });
 
+test('a half-typed flag survives the mission list being rebuilt', async () => {
+	const sp = fakeSp({
+		start: async (id, o) => {
+			sp.calls.push(['start', id, !!o.replace]);
+			sp.running = [{ lab: id, urls: [{ name: 'Portal', url: 'http://127.0.0.1:8081/' }], expires_in: 3600, services: [] }];
+			return { urls: [{ name: 'Portal', url: 'http://127.0.0.1:8081/' }], expires_in: 3600, ready: true };
+		},
+	});
+	const { doc, page } = setup({ sp });
+	const { ctl } = await page.init();
+	await until(() => ctl.ready());
+	const root = app(doc);
+	root.byTag('button').find((b) => b.textContent === '▶ Start lab').click();
+	await until(() => root.byClass('mission')[0].attrs.class.includes('running'));
+
+	const input = root.byTag('input')[0];
+	input.value = 'FLAG{m1_01_burp';
+	input.listeners.input[0]();
+
+	// The controller polls every 20s while a lab runs, and the poll rebuilds the list.
+	await ctl.refreshStatus();
+	await until(() => root.byTag('input')[0] !== input);
+	assert.equal(root.byTag('input')[0].value, 'FLAG{m1_01_burp', 'the draft survives the rebuild');
+	ctl.destroy();
+});
+
 test('coming-soon challenge has no lab controls or launcher sidebar', async () => {
 	const { doc, page } = setup({ query: '?c=nmap' });
 	const r = await page.init();

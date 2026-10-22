@@ -7,7 +7,8 @@
    1. PAGE SHELL
    -------------------------------------------------------------------------- */
 .ch-page { padding-bottom: var(--sp-24); }
-.challenge .container { max-width: 1200px; }
+/* The container keeps the system's 1400px. The old 1200px override was left over from the
+   pre-redesign layout and squeezed the tasks column to ~460px next to the sidebar. */
 
 /* Breadcrumbs */
 .crumbs {
@@ -72,7 +73,22 @@
 	align-items: start;
 }
 .ch-main { display: flex; flex-direction: column; gap: var(--sp-6); min-width: 0; }
-.side { display: flex; flex-direction: column; gap: var(--sp-4); position: sticky; top: calc(var(--nav-h) + var(--sp-4)); }
+/* The sidebar is taller than a laptop viewport. Without a max-height it sticks at the top
+   and its lower half — the launcher download and the extension panel — can never be
+   scrolled into view. Give it a bounded height and let it scroll inside. */
+.side {
+	display: flex;
+	flex-direction: column;
+	gap: var(--sp-4);
+	position: sticky;
+	top: calc(var(--nav-h) + var(--sp-4));
+	max-height: calc(100vh - var(--nav-h) - var(--sp-8));
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	scrollbar-width: thin;
+	scrollbar-color: var(--hairline-strong) transparent;
+	padding-right: 2px;
+}
 
 /* --------------------------------------------------------------------------
    2. PANELS
@@ -181,7 +197,7 @@
 	flex-direction: column;
 	align-items: flex-end;
 	gap: var(--sp-3);
-	min-width: 180px;
+	min-width: 160px;
 }
 .mission-ttl { font-size: 0.8125rem; color: var(--mute); }
 .mission-actions { display: flex; gap: var(--sp-2); }

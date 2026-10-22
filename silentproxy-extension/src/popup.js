@@ -92,23 +92,38 @@
     $('labs').hidden = labs.length === 0;
     const runningIds = new Set(running.map((r) => r.lab));
     for (const lab of labs) {
-      const prog = h('div', { class: 'progress', hidden: true });
+      // The launcher only sends a percent for the stages it can measure, so a stage without
+      // one gets an indeterminate bar rather than a made-up number.
+      const fill = h('div', { class: 'progress-fill indeterminate' });
+      const msg = h('span', { class: 'progress-msg' });
+      const prog = h('div', { class: 'progress', hidden: true },
+        h('div', { class: 'progress-track' }, fill), msg);
       const btn = h('button', { class: 'primary', disabled: runningIds.has(lab.id) }, runningIds.has(lab.id) ? 'Running' : 'Start');
-      btn.addEventListener('click', () => startLab(lab, btn, prog, false));
+      btn.addEventListener('click', () => startLab(lab, btn, { box: prog, fill, msg }, false));
       box.append(h('div', { class: 'card' },
         h('h3', {}, lab.title), lab.summary ? h('div', { class: 'muted' }, lab.summary) : null,
         h('div', { class: 'row' }, btn, h('span', { class: 'muted' }, lab.installed ? 'downloaded' : Math.round(lab.size / 1e5) / 10 + ' MB download')), prog));
     }
   }
 
-  async function startLab(lab, btn, prog, replace) {
-    btn.disabled = true; btn.textContent = 'Starting…'; prog.hidden = false; showAlert(null);
+  function showProgress(p, ui) {
+    ui.msg.textContent = p.message || '';
+    if (p.percent != null) {
+      ui.fill.className = 'progress-fill';
+      ui.fill.style.width = Math.max(0, Math.min(100, Math.round(p.percent))) + '%';
+    } else {
+      ui.fill.className = 'progress-fill indeterminate';
+    }
+  }
+
+  async function startLab(lab, btn, ui, replace) {
+    btn.disabled = true; btn.textContent = 'Starting…'; ui.box.hidden = false; showAlert(null);
     starting += 1;
-    const r = await call('start', { lab: lab.id, replace }, (p) => { prog.textContent = p.message + (p.percent != null ? ' ' + p.percent + '%' : ''); });
+    const r = await call('start', { lab: lab.id, replace }, (p) => showProgress(p, ui));
     starting -= 1;
     if (!r.ok && r.error.code === 'OTHER_LAB_RUNNING' && !replace) {
       if (confirm('Another lab is running (' + (r.error.running || []).join(', ') + '). Stop it and start "' + lab.title + '"?')) {
-        return startLab(lab, btn, prog, true);
+        return startLab(lab, btn, ui, true);
       }
     } else if (!r.ok) {
       showAlert(r.error);
