@@ -2,6 +2,8 @@ name: ci-probe
 on:
   push:
     tags: ["probe-*"]
+  workflow_dispatch:        # manual run from the Actions tab (builds and uploads artifacts, does not publish)
+
 jobs:
   probe:
     runs-on: ubuntu-latest
