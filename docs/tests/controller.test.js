@@ -162,6 +162,22 @@ test('polling stops when nothing is running', async () => {
 	assert.deepEqual(cleared, [7]);
 });
 
+test('a failed status poll is cleared by the next successful one', async () => {
+	let fail = true;
+	const sp = fakeSp({
+		status: async () => { if (fail) throw new Err('HOST_DISCONNECTED', 'The launcher is not responding.', { hint: 'Check it is running.' }); return { labs: [] }; },
+	});
+	const c = mk(sp);
+	await c.checkSetup();
+	assert.ok(c.state.notice, 'the failure is recorded');
+	assert.equal(c.state.notice.message, 'The launcher is not responding.');
+	assert.equal(c.state.notice.hint, 'Check it is running.');
+
+	fail = false; // the launcher comes back
+	await c.refreshStatus();
+	assert.equal(c.state.notice, null, 'a successful poll clears the stale notice');
+});
+
 test('only loopback http(s) URLs become links', () => {
 	const u = normalizeUrls([
 		{ name: 'ok', url: 'http://127.0.0.1:8081/x' }, { name: 'lh', url: 'http://localhost:9/' },

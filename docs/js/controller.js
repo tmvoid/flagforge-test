@@ -84,6 +84,7 @@
 		async function refreshStatus() {
 			let st;
 			try { st = await sp.status(); } catch (e) { state.notice = errObj(e); emit(); return; }
+			state.notice = null; // the launcher answered, so the previous failure is over
 			const running = {};
 			for (const l of st.labs || []) running[l.lab] = l;
 			for (const id of Object.keys(state.labs)) {

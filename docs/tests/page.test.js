@@ -123,6 +123,89 @@ test('coming-soon challenge has no lab controls or launcher sidebar', async () =
 	assert.match(root.textContent, /Coming soon/);
 });
 
+test('starting a lab shows the progress the launcher streamed', async () => {
+	const sp = fakeSp({
+		start: async (id, o) => {
+			sp.calls.push(['start', id, !!o.replace]);
+			o.onProgress({ stage: 'download', message: 'Downloading the mission bundle', percent: 40 });
+			await new Promise(() => {}); // stay in "starting" until the test is done
+			return { urls: [], expires_in: 60 };
+		},
+	});
+	const { doc, page } = setup({ sp });
+	const { ctl } = await page.init();
+	await until(() => ctl.ready());
+	const root = app(doc);
+	root.byTag('button').find((b) => b.textContent === '▶ Start lab').click();
+	await until(() => root.textContent.includes('Downloading the mission bundle'));
+	assert.match(root.textContent, /40%/);
+	ctl.destroy(); // the lab never leaves "starting", so the polling timer must be cleared
+});
+
+test('a failed status poll is surfaced, not swallowed', async () => {
+	let fail = true;
+	const sp = fakeSp({
+		status: async () => {
+			if (!fail) return { labs: [] };
+			const e = new Err('HOST_DISCONNECTED', 'The launcher is not responding.');
+			e.hint = 'Check that it is still running.';
+			throw e;
+		},
+	});
+	const { doc, page } = setup({ sp });
+	const { ctl } = await page.init();
+	await until(() => ctl.state.notice);
+	const root = app(doc);
+	assert.match(root.textContent, /The launcher is not responding/);
+	assert.match(root.textContent, /Check that it is still running/);
+
+	// The launcher comes back: the stale notice must not stay on screen.
+	fail = false;
+	await ctl.refreshStatus();
+	await until(() => !root.textContent.includes('The launcher is not responding'));
+});
+
+test('a stage without a percent gets an indeterminate bar, not a made-up number', async () => {
+	const sp = fakeSp({
+		start: async (id, o) => {
+			sp.calls.push(['start', id, !!o.replace]);
+			o.onProgress({ stage: 'starting', message: 'Starting containers' }); // no percent
+			await new Promise(() => {}); // stay in "starting" until the test is done
+			return { urls: [], expires_in: 60 };
+		},
+	});
+	const { doc, page } = setup({ sp });
+	const { ctl } = await page.init();
+	await until(() => ctl.ready());
+	const root = app(doc);
+	root.byTag('button').find((b) => b.textContent === '▶ Start lab').click();
+	await until(() => root.textContent.includes('Starting containers'));
+	const mission = root.byClass('mission')[0];
+	assert.ok(root.byClass('progress-fill').some((f) => f.attrs.class.includes('indeterminate')));
+	assert.ok(!mission.textContent.includes('%'), 'no percentage is invented for a stage without one');
+	ctl.destroy();
+});
+
+test('a lab that is not ready yet, and its service states, are shown', async () => {
+	const sp = fakeSp({
+		start: async (id, o) => {
+			sp.calls.push(['start', id, !!o.replace]);
+			sp.running = [{ lab: id, urls: [{ name: 'Portal', url: 'http://127.0.0.1:8081/' }], expires_in: 3600, services: [{ service: 'web', state: 'starting' }] }];
+			return { urls: [{ name: 'Portal', url: 'http://127.0.0.1:8081/' }], expires_in: 3600, ready: false };
+		},
+	});
+	const { doc, page } = setup({ sp });
+	const { ctl } = await page.init();
+	await until(() => ctl.ready());
+	const root = app(doc);
+	root.byTag('button').find((b) => b.textContent === '▶ Start lab').click();
+	await until(() => root.byClass('mission')[0].attrs.class.includes('running'));
+	assert.match(root.byClass('mission')[0].textContent, /Still warming up/);
+	assert.match(root.textContent, /web/);
+	assert.match(root.textContent, /starting/);
+	ctl.destroy(); // the lab is left running, so the polling timer must be cleared
+});
+
 test('unknown slug and data load failures show friendly messages', async () => {
 	let { doc, page } = setup({ query: '?c=../../etc' });
 	assert.equal(await page.init(), null);

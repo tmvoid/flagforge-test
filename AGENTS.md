@@ -27,8 +27,9 @@ python3 -m http.server 8000    # open http://localhost:8000/
 
 **CSP is strict and enforced by tests** — every page carries the same policy and
 `npm test` fails if any page has an inline `<script>`, a `style=` attribute, or an `on*=` handler.
-`style-src 'self'` has **no `unsafe-inline`**, so `setAttribute("style", …)` is blocked in the browser.
-Use a CSS class, or set a CSSOM property (`el.style.width = "50%"`), which CSP allows.
+Under `style-src 'self'` (no `unsafe-inline`), the browser blocks **`style="…"` attributes in the HTML source**
+and **`<style>` elements**. Setting a style from JavaScript is fine: both `el.style.width = …` and
+`el.setAttribute("style", …)` are allowed. Classes are still preferred for anything static.
 
 **Add a challenge**:
 1. Add entry to `data/challenges.json` with `"status": "live"` and `labs` array matching `labs.json` IDs
