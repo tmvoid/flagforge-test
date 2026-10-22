@@ -11,7 +11,7 @@ from unittest import mock
 
 from silentproxy import archive, config, install, net, policy, protocol, registry
 from silentproxy.errors import LabError
-from tests.helpers import GOOD_COMPOSE, dev_env, make_lab_zip, registry_json, serve
+from tests.helpers import dev_env, make_lab_zip, registry_json, serve
 
 
 class ProtocolTests(unittest.TestCase):

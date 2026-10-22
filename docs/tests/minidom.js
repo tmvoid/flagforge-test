@@ -33,4 +33,4 @@ function makeDoc(ids = ['app']) {
 		fire: (t) => (listeners[t] || []).forEach((f) => f({})),
 	};
 }
-module.exports = { El, Text, makeDoc };
+module.exports = { makeDoc };

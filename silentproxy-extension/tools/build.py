@@ -13,6 +13,9 @@ import zipfile
 from pathlib import Path
 from urllib.parse import urlparse
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from sync_sdk import sync  # noqa: E402  (same folder; not an installed package)
+
 ROOT = Path(__file__).resolve().parent.parent
 SRC, DIST = ROOT / "src", ROOT / "dist"
 GECKO_ID = "silentproxy-launcher@operationsilentproxy.local"  # must equal the launcher's FIREFOX_EXTENSION_ID
@@ -81,6 +84,7 @@ def main() -> None:
     if not re.fullmatch(r"\d+(\.\d+){0,3}", version):
         sys.exit("VERSION must look like 1.2.3")
     prefixes = [check_site(a.site, False)] + [check_site(d, True) for d in a.dev_site]
+    sync()  # the website ships its own copy of the SDK
     for browser in ("chrome", "firefox"):
         print("built", build(browser, prefixes, version))
     if not (ROOT / "keys" / "chrome-key.pub.b64").exists():

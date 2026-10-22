@@ -43,6 +43,8 @@ To republish after a change:
    `python3 tools/build.py --site https://tmvoid.github.io/flagforge-test/` in `silentproxy-extension`.
    The extension only works on the site address it was built for, so the built `.xpi` must be copied back to
    `docs/downloads/silentproxy-firefox.xpi` and committed.
+   The same command copies the SDK into `js/silentproxy-client.js`, so the site and the extension can never drift
+   apart. Run `python3 tools/sync_sdk.py` on its own if you only need that.
 3. `js/config.js` holds the GitHub org/repo of the launcher releases, the extension store links, and `chromeId`
    (printed by `tools/make_key.py`). `chromeId` fills in the Chrome install command shown to players.
 
