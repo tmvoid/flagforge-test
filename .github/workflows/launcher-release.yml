@@ -1,11 +1,22 @@
 # Lives at the REPO ROOT (flagforge-test/.github/workflows/). The launcher is a subfolder, so every step
 # runs inside silentproxy-launcher/.
-# Publish a release by pushing a tag that starts with "launcher-v", e.g.:  git tag launcher-v0.1.0 && git push origin launcher-v0.1.0
+#
+# Publish a release:
+#   git tag launcher-v0.1.0 && git push origin launcher-v0.1.0
+# ...but read the note on the trigger below first — a plain tag push does not always fire.
 name: launcher-release
 on:
   push:
     tags: ["launcher-v*"]
-  workflow_dispatch:        # manual run from the Actions tab (builds and uploads artifacts, does not publish)
+  # Reliable path: dispatch this against the tag ref, or give the tag explicitly.
+  #   gh workflow run launcher-release.yml --ref launcher-v0.1.0
+  #   gh workflow run launcher-release.yml -f tag=launcher-v0.1.0
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to publish, e.g. launcher-v0.1.0 (defaults to the ref the run was dispatched on)"
+        required: false
+        default: ""
 
 jobs:
   test:
@@ -26,7 +37,7 @@ jobs:
       matrix:
         include:
           # bin  = the name given to PyInstaller (it adds .exe by itself on Windows)
-          # file = the file that comes out, and the name players download
+          # file = the name that comes out, and the name players download
           - { os: ubuntu-latest,  bin: silentproxy-linux,   file: silentproxy-linux }
           - { os: macos-latest,   bin: silentproxy-macos,   file: silentproxy-macos }
           - { os: windows-latest, bin: silentproxy-windows, file: silentproxy-windows.exe }
@@ -50,19 +61,29 @@ jobs:
 
   publish:
     needs: build
-    if: startsWith(github.ref, 'refs/tags/launcher-v')
+    # Publish on a launcher-v tag, or on a manual dispatch that names one.
+    if: needs.build.result == 'success' && (startsWith(github.ref, 'refs/tags/launcher-v') || inputs.tag != '')
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           path: dist
           merge-multiple: true
       - name: Include the browser extension
-        working-directory: .
-        run: cp docs/downloads/silentproxy-firefox.xpi dist/silentproxy-firefox.xpi
+        run: cp "${{ github.workspace }}/docs/downloads/silentproxy-firefox.xpi" dist/silentproxy-firefox.xpi
       - run: cd dist && sha256sum * > SHA256SUMS.txt && ls -l
       - uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ inputs.tag || github.ref_name }}
           files: dist/*
+
+# NOTE on the trigger
+# -------------------
+# GitHub does not start a `push` workflow when the pushed tag points at a commit that is already
+# the tip of the default branch — which is exactly what `git tag && git push` produces right after
+# a release commit. Tag pushes that point elsewhere do fire normally.
+# Until that changes, publish with:
+#   gh workflow run launcher-release.yml --ref launcher-v0.1.0
