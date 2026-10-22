@@ -139,12 +139,14 @@ and pull-only on upstream.
   `silentproxy/config.py`. Lab zips live in upstream releases. Don't repoint these at the fork.
 - **Launcher binaries + extension**: built by `.github/workflows/launcher-release.yml`. The release gets all three
   launcher binaries plus `docs/downloads/silentproxy-firefox.xpi`.
-  **Cutting a release:** `gh workflow run launcher-release.yml --ref launcher-v0.1.0` (or `-f tag=launcher-v0.1.0`).
-  A plain `git tag && git push` is unreliable — GitHub does not start a `push` workflow when the tag points at a
-  commit that is already the default branch tip, which is exactly what a post-release tag does.
+  **Cutting a release:** `git tag launcher-v0.1.0 && git push origin launcher-v0.1.0` — the tag push is the normal
+  path and it publishes. `gh workflow run launcher-release.yml -f tag=launcher-v0.1.0` is the fallback, and the tag
+  must already exist on the remote.
 - **Extension site binding**: the extension only runs on the URL it was built for. `tools/build.py`'s `DEFAULT_SITE`
   is the live site. After changing it, rebuild and copy `dist/silentproxy-extension-firefox-*.zip` back to
   `docs/downloads/silentproxy-firefox.xpi`.
+- **CI**: `.github/workflows/ci.yml` runs the website, extension and launcher suites on every push to `main` and on
+  every pull request. The website suite is what enforces the strict CSP — don't merge without it.
 - **Chrome extension ID**: `enekoeifnnaobnefccfijkkdbnaleleg`, from `keys/chrome-key.pem` (gitignored, private).
   `keys/chrome-key.pub.b64` is committed, so the ID is reproducible. Losing the `.pem` changes the ID and every
   player's `install --chrome-id`.
