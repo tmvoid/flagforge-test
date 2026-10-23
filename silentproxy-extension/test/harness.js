@@ -120,7 +120,7 @@ function createBrowser({ extId = 'testextid', prefixes = ['https://site.test/sil
       onAlarm: alarmEvent,
     },
   };
-  const ctx = vm.createContext({ chrome, console, setTimeout, clearTimeout, JSON, Promise });
+  const ctx = vm.createContext({ chrome, console, setTimeout, clearTimeout, JSON, Promise, URL });
   vm.runInContext(read('common.js'), ctx);
   vm.runInContext(`globalThis.SP_CONFIG = ${JSON.stringify({ allowedPrefixes: prefixes })};`, ctx);
   vm.runInContext(read('background.js'), ctx);

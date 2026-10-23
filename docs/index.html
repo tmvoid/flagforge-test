@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https://github.com https://avatars.githubusercontent.com https://images.unsplash.com; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 	<meta name="description" content="Flag Forge — realistic offensive and defensive security labs. Real tools, real targets, real skills.">
 	<title>Flag Forge · Master Cybersecurity</title>
 	<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
@@ -39,6 +39,7 @@
 	</div>
 
 	<header class="hero-section">
+		<div class="swarm-cursor-container" aria-hidden="true"></div>
 		<div class="mesh-gradient" aria-hidden="true"></div>
 		<div class="container">
 			<div class="hero-content">
@@ -185,6 +186,8 @@
 		</div>
 	</footer>
 
+	<script src="js/swarm-cursor.js"></script>
+	<script src="js/swarm-init.js"></script>
 	<script src="js/home.js"></script>
 </body>
 </html>

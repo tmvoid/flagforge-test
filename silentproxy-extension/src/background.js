@@ -12,14 +12,46 @@ if (typeof importScripts === 'function') importScripts('common.js', 'config.js')
   let seq = 0;
   const inflight = new Map(); // native id -> {port, cid, action}
 
+  // Rate limiting: per-origin token bucket (3 req/s, burst 10)
+  const RATE_LIMIT = { maxTokens: 10, refillPerSec: 3 };
+  const rateLimiters = new Map(); // origin -> { tokens, lastRefill }
+  function checkRateLimit(origin) {
+    const now = Date.now();
+    let rl = rateLimiters.get(origin);
+    if (!rl) {
+      rl = { tokens: RATE_LIMIT.maxTokens, lastRefill: now };
+      rateLimiters.set(origin, rl);
+    }
+    const elapsed = (now - rl.lastRefill) / 1000;
+    rl.tokens = Math.min(RATE_LIMIT.maxTokens, rl.tokens + elapsed * RATE_LIMIT.refillPerSec);
+    if (rl.tokens < 1) return false;
+    rl.tokens -= 1;
+    rl.lastRefill = now;
+    return true;
+  }
+
   const safe = (v) => { if (v && typeof v.catch === 'function') v.catch(() => {}); };
+
+  function isAllowedOrigin(url, prefixes) {
+    try {
+      const u = new URL(url);
+      return prefixes.some((p) => {
+        const prefixUrl = new URL(p);
+        return u.protocol === prefixUrl.protocol &&
+               u.hostname === prefixUrl.hostname &&
+               u.pathname.startsWith(prefixUrl.pathname);
+      });
+    } catch {
+      return false;
+    }
+  }
 
   function trustedSender(port) {
     const s = port.sender || {};
     if (s.id !== undefined && s.id !== api.runtime.id) return false;
     const url = s.url || '';
     if (url.startsWith(api.runtime.getURL(''))) return true; // our popup
-    return CONFIG.allowedPrefixes.some((p) => url.startsWith(p));
+    return isAllowedOrigin(url, CONFIG.allowedPrefixes);
   }
 
   function post(port, obj) {
@@ -109,6 +141,12 @@ if (typeof importScripts === 'function') importScripts('common.js', 'config.js')
   // ---- clients (content-script bridge, popup) ------------------------------
   api.runtime.onConnect.addListener((port) => {
     if (!trustedSender(port)) {
+      port.disconnect();
+      return;
+    }
+    const origin = (port.sender && port.sender.url) ? new URL(port.sender.url).origin : 'unknown';
+    if (!checkRateLimit(origin)) {
+      port.postMessage({ error: { code: 'RATE_LIMIT', message: 'Too many requests from this origin' } });
       port.disconnect();
       return;
     }

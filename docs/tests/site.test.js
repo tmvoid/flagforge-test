@@ -10,15 +10,21 @@ const ROOT = path.join(__dirname, '..');
 const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8');
 const exists = (f) => fs.existsSync(path.join(ROOT, f));
 const DATA = JSON.parse(read('data/challenges.json'));
-const PAGES = ['index.html', 'jr-pentest.html', 'challenge.html'];
+const CTF_INDEX = JSON.parse(read('data/ctf/index.json'));
+const PAGES = ['index.html', 'jr-pentest.html', 'challenge.html', 'ctf.html'];
 const sandbox = { window: {} };
 vm.runInNewContext(read('js/config.js'), sandbox);
 const CFG = sandbox.window.FLAGFORGE;
 
 test('every card on jr-pentest.html opens a challenge that exists, and every challenge has a card', () => {
-	const linked = [...read('jr-pentest.html').matchAll(/href="challenge\.html\?c=([^"]+)"/g)].map((m) => m[1]);
-	const slugs = DATA.challenges.map((c) => c.slug);
-	assert.deepEqual([...linked].sort(), [...slugs].sort());
+	const challengeLinks = [...read('jr-pentest.html').matchAll(/href="challenge\.html\?c=([^"]+)"/g)].map((m) => m[1]);
+	const ctfLinks = [...read('jr-pentest.html').matchAll(/href="ctf\.html\?tool=([^"]+)"/g)].map((m) => m[1]);
+	const challengeSlugs = DATA.challenges.map((c) => c.slug);
+	const ctfTools = (CTF_INDEX.tools || []).map((t) => t.id);
+	// Old-style challenge cards must match challenges.json
+	assert.deepEqual([...challengeLinks].sort(), [...challengeSlugs].sort());
+	// New-style CTF module cards must match data/ctf/index.json
+	assert.deepEqual([...ctfLinks].sort(), [...ctfTools].sort());
 	assert.ok(read('index.html').includes('href="jr-pentest.html"'));
 	for (const t of DATA.tracks) assert.ok(exists(t.page), t.page);
 });

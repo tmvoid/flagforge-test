@@ -444,6 +444,15 @@ body:has(.nav-checkbox:checked) .nav-toggle span::after { opacity: 0; }
 /* ==========================================================================
    9. HERO
    ========================================================================== */
+/* SwarmCursor container */
+.swarm-cursor-container {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	overflow: hidden;
+	pointer-events: none;
+}
+
 .hero-section {
 	position: relative;
 	padding: calc(var(--nav-h) + var(--sp-32)) 0 var(--sp-24);

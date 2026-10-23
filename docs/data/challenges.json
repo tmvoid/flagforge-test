@@ -94,24 +94,6 @@
 			]
 		},
 		{
-			"slug": "nmap",
-			"track": "jr-pentest",
-			"title": "Nmap-CTF",
-			"codename": "Operation Silent Proxy",
-			"tool": "Nmap",
-			"difficulty": "Hard",
-			"status": "coming-soon",
-			"tagline": "Hands-on challenges for Nmap, one of the tools the Final CTF requires.",
-			"description": [ "This tool-specific CTF prepares you for the Final Jr Penetration Testing CTF." ],
-			"facts": [], "learn": [], "requirements": [],
-			"readme": "challenges/nmap/README.md",
-			"repo": "https://github.com/FlagForge-CTF",
-			"contributors": [
-				{ "name": "Tanmay Bharadwaj", "role": "Author", "github": "tmvoid" }
-			],
-			"labs": []
-		},
-		{
 			"slug": "hydra",
 			"track": "jr-pentest",
 			"title": "Hydra-CTF",

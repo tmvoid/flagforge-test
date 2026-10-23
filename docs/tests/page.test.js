@@ -139,7 +139,7 @@ test('a half-typed flag survives the mission list being rebuilt', async () => {
 });
 
 test('coming-soon challenge has no lab controls or launcher sidebar', async () => {
-	const { doc, page } = setup({ query: '?c=nmap' });
+	const { doc, page } = setup({ query: '?c=hydra' });
 	const r = await page.init();
 	assert.equal(r.ctl, null);
 	const root = app(doc);
@@ -267,7 +267,7 @@ test('contributor cards are hardened', async () => {
 		{ name: 'Only Name' },
 		{ name: '<img src=x onerror=alert(1)>', github: '' },
 	];
-	const { doc, page } = setup({ query: '?c=nmap', data });
+	const { doc, page } = setup({ query: '?c=hydra', data });
 	await page.init();
 	const people = app(doc).byClass('person');
 	assert.equal(people.length, 4);
@@ -295,7 +295,7 @@ test('data from the JSON is never interpreted as HTML', async () => {
 test('missing README is handled', async () => {
 	const data = JSON.parse(JSON.stringify(DATA));
 	data.challenges[1].readme = 'challenges/nope/README.md';
-	const { doc, page } = setup({ query: '?c=nmap', data });
+	const { doc, page } = setup({ query: '?c=hydra', data });
 	await page.init();
 	await until(() => /could not be loaded/.test(app(doc).textContent));
 });

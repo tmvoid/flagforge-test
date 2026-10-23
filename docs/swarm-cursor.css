@@ -1,0 +1,27 @@
+/* ==========================================================================
+   FLAG FORGE — SwarmCursor
+   ========================================================================== */
+.swarm-cursor {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+.swarm-cursor-canvas {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	display: block;
+	pointer-events: none;
+	user-select: none;
+	mix-blend-mode: screen;
+	opacity: 0.8;
+}
+
+.swarm-cursor-content {
+	position: relative;
+	z-index: 1;
+}

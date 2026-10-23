@@ -475,10 +475,12 @@
 				h("span", { class: "panel-sub", text: "Full brief and rules" })
 			),
 			body);
-		env.fetch(ch.readme)
-			.then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
+		const controller = new AbortController();
+		const timeout = setTimeout(() => controller.abort(), 10000);
+		env.fetch(ch.readme, { signal: controller.signal })
+			.then((r) => { clearTimeout(timeout); if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
 			.then((md) => { clear(body); env.md.renderInto(body, md, doc); })
-			.catch(() => { clear(body); body.append(h("p", { class: "muted", text: "The README could not be loaded." })); });
+			.catch(() => { clearTimeout(timeout); clear(body); body.append(h("p", { class: "muted", text: "The README could not be loaded." })); });
 		return panel;
 	}
 

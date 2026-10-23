@@ -26,9 +26,14 @@ def self_command() -> List[str]:
 
 def spawn(lab_id: str) -> int:
     """Start a detached reaper for lab_id and return its pid."""
-    env = dict(os.environ)
     src_root = str(Path(__file__).resolve().parent.parent)
-    env["PYTHONPATH"] = os.pathsep.join(filter(None, [src_root, env.get("PYTHONPATH", "")]))
+    env = {"PATH": os.environ.get("PATH", ""), "PYTHONPATH": src_root}
+    # Preserve minimal required vars
+    for k in ("HOME", "USER", "TEMP", "TMP", "SYSTEMROOT", "WINDIR", "LANG", "LC_ALL", "LANGUAGE",
+              "SILENTPROXY_DEV", "SILENTPROXY_HOME", "SILENTPROXY_REGISTRY", "SILENTPROXY_DOCKER_BIN",
+              "FAKE_DOCKER_STATE"):
+        v = os.environ.get(k)
+        if v: env[k] = v
     kwargs = {"stdin": subprocess.DEVNULL, "stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL, "env": env}
     if sys.platform == "win32":
         kwargs["creationflags"] = 0x00000008 | 0x00000200 | 0x08000000  # DETACHED | NEW_GROUP | NO_WINDOW
